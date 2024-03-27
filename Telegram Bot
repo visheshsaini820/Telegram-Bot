@@ -1,0 +1,28 @@
+import telebot
+import ast
+
+Token = "6846304527:AAGlnK6fxQpNiOOd7ytOU7vna8-7cjNSUvs"
+bot = telebot.TeleBot(Token)
+
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.reply_to(message, "Welcome to visheshBot")
+
+@bot.message_handler(commands=['help'])
+def help(message):
+    bot.reply_to(message, """/start -> Greeting
+/help -> will give you all command list
+If you want to use it as calculator then feel free
+""")
+
+@bot.message_handler(func=lambda message: True)
+def custom(message):
+    try:
+        expression = message.text.strip()
+        tree = ast.parse(expression, mode='eval')
+        result = eval(compile(tree, filename='<string>', mode='eval'))
+        bot.reply_to(message, f"Result: {result}")
+    except Exception as e:
+        bot.reply_to(message, "Invalid expression")
+
+bot.polling()
